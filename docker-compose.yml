@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  ocr-app:
+    build:
+      context: ./ocr-app
+      dockerfile: Dockerfile
+    container_name: ocr-app
+    ports:
+      - 5000:5000
+
+  translation-app:
+    build:
+      context: ./eng2viet-app
+      dockerfile: Dockerfile
+    container_name: translation-app
+    ports:
+      - 9000:9000
+
+  lens-app:
+    build:
+      context: ./lens
+      dockerfile: Dockerfile
+    container_name: lens-app
+    ports:
+      - 8000:8000
