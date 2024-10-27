@@ -5,6 +5,8 @@ RUN apt-get -y  update; apt-get -y install sudo build-essential nano git wget li
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . .
+WORKDIR /app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
+COPY . /app
+
+CMD ["python", "app/main.py"]

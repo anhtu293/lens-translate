@@ -10,8 +10,10 @@ reader = easyocr.Reader(
     ["en"],
     model_storage_directory=model_dir,
     detect_network="craft",
+    gpu=False,
 )
 detection = reader.readtext(img_path)
+
 
 # if OCR prob is over 0.5, overlay bounding box and text
 fontpath = os.path.join(os.path.dirname(__file__), "./BeVietnam-Light.ttf")

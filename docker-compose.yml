@@ -1,21 +1,35 @@
 version: "3.8"
 
 services:
+  rabbitmq:
+    image: rabbitmq:3.12.1-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+
   ocr-app:
     build:
       context: ./ocr-app
       dockerfile: Dockerfile
-    container_name: ocr-app
-    ports:
-      - 5000:5000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   translation-app:
     build:
       context: ./eng2viet-app
       dockerfile: Dockerfile
-    container_name: translation-app
-    ports:
-      - 9000:9000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   lens-app:
     build:
@@ -24,3 +38,6 @@ services:
     container_name: lens-app
     ports:
       - 8000:8000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
