@@ -28,7 +28,7 @@ services:
 
   translation-app:
     build:
-      context: ./eng2viet-app
+      context: ./trans-app
       dockerfile: Dockerfile
     depends_on:
       rabbitmq:
