@@ -3,7 +3,6 @@ import cv2
 import os
 import asyncio
 from PIL import Image, ImageFont
-import numpy as np
 from io import BytesIO
 from .utils import draw_results
 import pika
@@ -12,7 +11,11 @@ import uuid
 import base64
 from loguru import logger
 
-credentials = pika.PlainCredentials("user", "password")
+
+RABBITMQ_USER = os.getenv("RABBITMQ_USER")
+RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
+
+credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
     pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
 )
@@ -74,10 +77,8 @@ async def process_image(data: bytes, task_id: str) -> None:
             await asyncio.sleep(1)
 
     # find suitable font size
-    ocr_result["bboxes"] = np.array(ocr_result["bboxes"])
     logger.info("Formatting results")
-    bboxes_heights = [bbox[3] - bbox[0] for bbox in ocr_result["bboxes"]]
-    font_size = int(np.median(bboxes_heights)) - 5
+    font_size = int(ocr_result["bbox_height"] / 1.5)
 
     # Lens
     fontpath = os.path.join(os.path.dirname(__file__), "./BeVietnam-Light.ttf")
@@ -114,6 +115,6 @@ async def websocket_endpoint(websocket: WebSocket):
                 break
             await asyncio.sleep(1)
     finally:
-        del websocket_connections[task_id]
+        # del websocket_connections[task_id]
         task_results.pop(task_id, None)
-        logger.info(f"Connection closed: {task_id}")
+        # logger.info(f"Connection closed: {task_id}")

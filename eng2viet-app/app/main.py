@@ -2,9 +2,13 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import pika
 import json
 from loguru import logger
+import os
 
 
-credentials = pika.PlainCredentials("user", "password")
+RABBITMQ_USER = os.getenv("RABBITMQ_USER")
+RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
+
+credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
     pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
 )
@@ -29,7 +33,9 @@ def process_translation_task(ch, method, properties, body):
         eng_input = f"en: {input}"
         inputs = tokenizer(eng_input, return_tensors="pt", padding=True).input_ids
         outputs = model.generate(inputs, max_length=512)
-        translations.append(tokenizer.batch_decode(outputs, skip_special_tokens=True)[0])
+        result = tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+        result = result.replace("vi: ", "")
+        translations.append(result)
 
     channel.basic_publish(
         exchange="",

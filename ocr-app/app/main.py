@@ -4,22 +4,28 @@ from PIL import Image
 import imagehash
 from collections import OrderedDict
 from io import BytesIO
-import numpy as np
 import pika
 import json
 from loguru import logger
 import base64
+import numpy as np
+from .utils import get_sentence
 
+
+RABBITMQ_USER = os.getenv("RABBITMQ_USER")
+RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
 CACHE_SIZE = 100
 cache = OrderedDict()
 
-credentials = pika.PlainCredentials("user", "password")
+credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
     pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
 )
 channel = queue_connection.channel()
 channel.queue_declare(queue="ocr_tasks", durable=True)
 channel.queue_declare(queue="ocr_results", durable=True)
+logger.info("OCR channel initialized")
+
 
 # Load model
 model_dir = os.path.join(os.path.dirname(__file__), "models")
@@ -43,13 +49,19 @@ def process_ocr_task(ch, method, properties, body):
 
     detection = reader.readtext(image)
 
-    # Create the final result
-    result = {"bboxes": [], "texts": []}
+    # Get median height of bboxes
+    bboxes_heights = []
     for bbox, text, prob in detection:
-        if prob >= 0.5:
-            bbox = np.array(bbox).tolist()
-            result["bboxes"].append(bbox)
-            result["texts"].append(text)
+        (top_left, _, bottom_right, _) = bbox
+        bboxes_heights.append(bottom_right[1] - top_left[1])
+    bbox_height = int(np.median(bboxes_heights))
+
+    # Create the final result
+    result = get_sentence(detection)
+
+    bboxes = [box[0] for box in result]
+    texts = [box[1] for box in result]
+    result = {"bboxes": bboxes, "texts": texts, "bbox_height": bbox_height}
 
     if len(cache) >= CACHE_SIZE:
         cache.popitem(last=False)
