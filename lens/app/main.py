@@ -14,10 +14,10 @@ from loguru import logger
 
 RABBITMQ_USER = os.getenv("RABBITMQ_USER")
 RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
-
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
+    pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000)
 )
 logger.info("Connected to RabbitMQ")
 channel = queue_connection.channel()
@@ -146,7 +146,6 @@ async def websocket_endpoint(websocket: WebSocket):
     data = await websocket.receive()
 
     logger.info(f"Processing image: {task_id}")
-    # background_tasks.add_task(process_image, data, task_id)
     asyncio.create_task(process_image(data["bytes"], task_id))
 
     try:
@@ -161,6 +160,4 @@ async def websocket_endpoint(websocket: WebSocket):
                 break
             await asyncio.sleep(1)
     finally:
-        # del websocket_connections[task_id]
         task_results.pop(task_id, None)
-        # logger.info(f"Connection closed: {task_id}")

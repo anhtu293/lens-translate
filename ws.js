@@ -1,4 +1,4 @@
-const ws = new WebSocket("ws://localhost:8000/ws");
+const ws = new WebSocket("ws://10.104.18.28:80/ws");
 
 const form = document.querySelector('form')
 

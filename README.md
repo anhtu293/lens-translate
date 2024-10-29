@@ -33,3 +33,19 @@ docker compose up -d
 - Open [index.html](index.html) in web browser to use the application.
 
 - You can supervise the queue (**RabbitMQ**) from `localhost:15672`
+
+
+## 3. K8S
+
+### 3.1 RabbitMQ
+
+```bash
+cd deployments/rabbitmq
+helm upgrade --install --set auth.username=rabbitmq,auth.password=rabbitmq rabbitmq .
+```
+
+### 3.2 Nginx-ingress
+```bash
+cd deployments/nginx-ingress
+helm upgrade --install nginx-ingress .
+```

@@ -1,0 +1,23 @@
+lens_app:
+  image:
+    repository: anhtu293/lens-app
+    tag: "0.0.1"
+    pullPolicy: Always
+  port: 8000
+
+ocr_app:
+  image:
+    repository: anhtu293/ocr-app
+    tag: "0.0.1"
+    pullPolicy: Always
+
+translation_app:
+  image:
+    repository: anhtu293/translation-app
+    tag: "0.0.1"
+    pullPolicy: Always
+
+rabbitmq:
+  host: 10.105.76.139
+  user: rabbitmq
+  password: rabbitmq

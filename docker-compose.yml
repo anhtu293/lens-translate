@@ -25,6 +25,7 @@ services:
     environment:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
 
   translation-app:
     build:
@@ -36,6 +37,7 @@ services:
     environment:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
 
   lens-app:
     build:
@@ -50,3 +52,4 @@ services:
     environment:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
