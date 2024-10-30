@@ -1,3 +1,4 @@
+namespace: model-serving
 lens_app:
   image:
     repository: anhtu293/lens-app
@@ -18,6 +19,6 @@ translation_app:
     pullPolicy: Always
 
 rabbitmq:
-  host: 10.105.76.139
+  host: 10.99.245.160
   user: rabbitmq
   password: rabbitmq

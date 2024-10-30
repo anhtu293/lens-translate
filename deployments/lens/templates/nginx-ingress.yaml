@@ -2,22 +2,38 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-nginx-ingress
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade "websocket";
-        proxy_set_header Connection "Upgrade";
 spec:
+  ingressClassName: nginx
   rules:
-  - host: lenstranslate.com
-    http:
-      paths:
-      - path: /ws
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-lens-app
-            port:
-              number: 8000
+    # - host: hello-world.example
+    -
+      http:
+        paths:
+        - path: /translate
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /docs
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /openapi.json
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /healthcheck
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
