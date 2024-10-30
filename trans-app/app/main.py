@@ -7,10 +7,10 @@ import os
 
 RABBITMQ_USER = os.getenv("RABBITMQ_USER")
 RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
-
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
+    pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000)
 )
 channel = queue_connection.channel()
 

@@ -9,13 +9,12 @@ The application consists of the following components:
 - **OCR Service** and **Translation Service** are separated services to improve scalability and overall application throughput.
 
 ### Architecture Flow
-1. User uploads an image through the web [interface](index.html)
-2. WebSocket connection is established with **lens-app** (built with FastAPI)
-3. Image is sent to **OCR Service** for text detection via `OCR Queue`
-4. **OCR Service** detects text in images and sends results to `OCR Results Queue`
-5. **lens-app** receives results (bounding boxes and text) from `OCR Results` and forwards text to **Translation Service** via `Trans Queue`
-6. **Translation Service** processes the text and returns results to **lens-app** via `Trans Results` queue
-7. **lens-app** overlays translated text onto the original image using the bounding boxes and sends the result back to the user
+1. User uploads an image. Image is then sent to **lens-app**
+2. Image is sent to **OCR Service** for text detection via `OCR Queue`
+3. **OCR Service** detects text in images and sends results to `OCR Results Queue`
+4. **lens-app** receives results (bounding boxes and text) from `OCR Results` and forwards text to **Translation Service** via `Trans Queue`
+5. **Translation Service** processes the text and returns results to **lens-app** via `Trans Results` queue
+6. **lens-app** overlays translated text onto the original image using the bounding boxes and sends the result back to the user
 
 ## 2. Local Deployment
 
@@ -30,6 +29,57 @@ RABBITMQ_PASSWORD=password
 docker compose up -d
 ```
 
-- Open [index.html](index.html) in web browser to use the application.
+- Open `localhost:8000` in web browser and you should have the following **FastAPI** doc.
+![](images/fastapi_doc.png)
 
 - You can supervise the queue (**RabbitMQ**) from `localhost:15672`
+
+
+## 3. K8S with minikube
+
+### 3.0 Prerequisites
+- Setup minikube
+```bash
+minikube start
+minikube addons enable ingress
+minikube tunnel
+```
+
+- Create namespace
+```bash
+
+kubectl create namespace model-serving
+```
+
+### 3.1 RabbitMQ
+
+```bash
+cd deployments/rabbitmq
+helm upgrade --install --set auth.username=rabbitmq,auth.password=rabbitmq rabbitmq .
+```
+
+### 3.2 Nginx-ingress
+```bash
+cd deployments/nginx-ingress
+helm upgrade --install nginx-ingress .
+```
+
+### 3.3 lens
+- Get ClusterIP of `rabbitmq`
+```bash
+k get svc rabbitmq
+```
+
+- Copy ClusterIP to `deployments/lens/values.yaml`: `rabbitmq.host`
+```bash
+cd deployments/lens
+helm upgrade --install lens .
+```
+
+### 3.4 Test
+- Get Minikube IP
+```bash
+minikube ip
+```
+
+- Use web broser to access `minikubeIP/docs`. You should have the **FastAPI** doc.

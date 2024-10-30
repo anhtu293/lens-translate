@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-nginx-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    # - host: hello-world.example
+    -
+      http:
+        paths:
+        - path: /translate
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /docs
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /openapi.json
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000
+        - path: /healthcheck
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}-lens-app
+              port:
+                number: 8000

@@ -1,4 +1,5 @@
-from fastapi import FastAPI, WebSocket, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import StreamingResponse
 import cv2
 import os
 import asyncio
@@ -14,10 +15,10 @@ from loguru import logger
 
 RABBITMQ_USER = os.getenv("RABBITMQ_USER")
 RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
-
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host="rabbitmq", credentials=credentials, heartbeat=6000)
+    pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000)
 )
 logger.info("Connected to RabbitMQ")
 channel = queue_connection.channel()
@@ -54,8 +55,6 @@ channel.queue_declare(queue="translation_results", durable=True)
 app = FastAPI()
 
 task_results = {}
-websocket_connections = {}
-background_tasks = BackgroundTasks()
 
 
 async def process_image(data: bytes, task_id: str) -> None:
@@ -136,18 +135,18 @@ async def process_image(data: bytes, task_id: str) -> None:
         task_results[task_id] = None
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    task_id = str(uuid.uuid4())
-    logger.info(f"New connection: {task_id}")
+@app.get("/healthcheck")
+async def healthcheck():
+    return {"status": "ok"}
 
-    websocket_connections[task_id] = websocket
-    data = await websocket.receive()
+
+@app.post("/translate")
+async def translate(file: UploadFile = File(...)):
+    task_id = str(uuid.uuid4())
+    data = await file.read()
 
     logger.info(f"Processing image: {task_id}")
-    # background_tasks.add_task(process_image, data, task_id)
-    asyncio.create_task(process_image(data["bytes"], task_id))
+    asyncio.create_task(process_image(data, task_id))
 
     try:
         while True:
@@ -155,12 +154,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 logger.info(f"Sending result: {task_id}")
                 result = task_results[task_id]
                 if result is not None:
-                    await websocket.send({"type": "websocket.send", "bytes": result})
+                    return StreamingResponse(BytesIO(result), media_type="image/jpeg")
                 else:
-                    await websocket.send({"type": "websocket.send", "text": "Error"})
-                break
+                    return {"error": "Error"}
             await asyncio.sleep(1)
     finally:
-        # del websocket_connections[task_id]
         task_results.pop(task_id, None)
-        # logger.info(f"Connection closed: {task_id}")
