@@ -47,15 +47,22 @@ minikube tunnel
 
 - Create namespace
 ```bash
-
 kubectl create namespace model-serving
 ```
+
+- Set your [secret](deployments/secret.yaml). You must encode your password using `base64` to be able to use with K8S Secret: `echo -n "YOUR PASSWORD" | base64`.
+Set your password in secret. Then execute the following command to apply secret
+```bash
+cd deployments
+kubectl apply -f secret.yaml
+```
+
 
 ### 3.1 RabbitMQ
 
 ```bash
 cd deployments/rabbitmq
-helm upgrade --install --set auth.username=rabbitmq,auth.password=rabbitmq rabbitmq .
+helm upgrade --install rabbitmq .
 ```
 
 ### 3.2 Nginx-ingress

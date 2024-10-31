@@ -25,7 +25,10 @@ spec:
             - name: RABBITMQ_USER
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASSWORD
-              value: {{ .Values.rabbitmq.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq-password
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,7 +55,10 @@ spec:
             - name: RABBITMQ_USER
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASSWORD
-              value: {{ .Values.rabbitmq.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq-password
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -79,4 +85,7 @@ spec:
             - name: RABBITMQ_USER
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASSWORD
-              value: {{ .Values.rabbitmq.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-credentials
+                  key: rabbitmq-password

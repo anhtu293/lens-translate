@@ -19,6 +19,6 @@ translation_app:
     pullPolicy: Always
 
 rabbitmq:
-  host: 10.99.245.160
+  host: 10.97.156.180
   user: rabbitmq
-  password: rabbitmq
+  # password: rabbitmq
