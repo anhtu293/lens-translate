@@ -16,7 +16,7 @@ The application consists of the following components:
 5. **Translation Service** processes the text and returns results to **lens-app** via `Trans Results` queue
 6. **lens-app** overlays translated text onto the original image using the bounding boxes and sends the result back to the user
 
-## 2. Local Deployment
+## 2. Local Deployment with docker compose
 
 - Create `.env` file
 ```
@@ -35,7 +35,7 @@ docker compose up -d
 - You can supervise the queue (**RabbitMQ**) from `localhost:15672`
 
 
-## 3. K8S with minikube
+## 3. Local deployment K8S with minikube
 
 ### 3.0 Prerequisites
 - Setup minikube

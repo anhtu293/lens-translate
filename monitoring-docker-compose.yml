@@ -1,0 +1,112 @@
+# Source: https://github.com/deviantony/docker-elk/edit/main/docker-compose.yml
+version: "3.7"
+
+services:
+
+  # The 'setup' service runs a one-off script which initializes the
+  # 'logstash_internal' and 'kibana_system' users inside Elasticsearch with the
+  # values of the passwords defined in the '.env' file.
+  #
+  # This task is only performed during the *initial* startup of the stack. On all
+  # subsequent runs, the service simply returns immediately, without performing
+  # any modification to existing users.
+  setup:
+    build:
+      context: monitoring/elk/setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./monitoring/elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./monitoring/elk/setup/lib.sh:/lib.sh:ro,Z
+      - ./monitoring/elk/setup/roles:/roles:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    build:
+      context: monitoring/elk/elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./monitoring/elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      # Bootstrap password.
+      # Used to initialize the keystore during the initial startup of
+      # Elasticsearch. Ignored on subsequent runs.
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
+      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+    networks:
+      - elk
+    restart: unless-stopped
+
+  kibana:
+    build:
+      context: monitoring/elk/kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./monitoring/elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - 5601:5601
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  filebeat:
+    build:
+      context: ./monitoring/elk/extensions/filebeat/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/filebeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./monitoring/elk/extensions/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    environment:
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  setup:
+  elasticsearch:
