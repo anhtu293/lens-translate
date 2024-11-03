@@ -21,14 +21,22 @@ spec:
             - containerPort: {{ .Values.lens_app.port }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.rabbitmq.host }}
+              value: "{{ .Values.rabbitmq.host }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.rabbitmq.user }}
+              value: "{{ .Values.rabbitmq.user }}"
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: rabbitmq-credentials
                   key: rabbitmq-password
+            - name: METRIC_SERVICE_NAME
+              value: "{{ .Values.lens_app.metric_service_name }}"
+            - name: METRIC_SERVICE_VERSION
+              value: "{{ .Values.lens_app.metric_service_version }}"
+            - name: JAEGER_AGENT_HOST
+              value: "{{ .Values.jaeger.agent_host }}"
+            - name: JAEGER_AGENT_PORT
+              value: "{{ .Values.jaeger.agent_port }}"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -51,14 +59,22 @@ spec:
           imagePullPolicy: {{ .Values.ocr_app.image.pullPolicy }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.rabbitmq.host }}
+              value: "{{ .Values.rabbitmq.host }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.rabbitmq.user }}
+              value: "{{ .Values.rabbitmq.user }}"
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: rabbitmq-credentials
                   key: rabbitmq-password
+            - name: METRIC_SERVICE_NAME
+              value: "{{ .Values.ocr_app.metric_service_name }}"
+            - name: METRIC_SERVICE_VERSION
+              value: "{{ .Values.ocr_app.metric_service_version }}"
+            - name: JAEGER_AGENT_HOST
+              value: "{{ .Values.jaeger.agent_host }}"
+            - name: JAEGER_AGENT_PORT
+              value: "{{ .Values.jaeger.agent_port }}"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,11 +97,19 @@ spec:
           imagePullPolicy: {{ .Values.translation_app.image.pullPolicy }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.rabbitmq.host }}
+              value: "{{ .Values.rabbitmq.host }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.rabbitmq.user }}
+              value: "{{ .Values.rabbitmq.user }}"
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: rabbitmq-credentials
                   key: rabbitmq-password
+            - name: METRIC_SERVICE_NAME
+              value: "{{ .Values.translation_app.metric_service_name }}"
+            - name: METRIC_SERVICE_VERSION
+              value: "{{ .Values.translation_app.metric_service_version }}"
+            - name: JAEGER_AGENT_HOST
+              value: "{{ .Values.jaeger.agent_host }}"
+            - name: JAEGER_AGENT_PORT
+              value: "{{ .Values.jaeger.agent_port }}"

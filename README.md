@@ -57,6 +57,11 @@ cd deployments
 kubectl apply -f secret.yaml
 ```
 
+- Setup `jaeger` host for collecting tracing
+```bash
+cd deployments/monitoring/metrics/jaeger
+helm upgrade --install jaeger .
+```
 
 ### 3.1 RabbitMQ
 
@@ -77,11 +82,14 @@ helm upgrade --install nginx-ingress .
 k get svc rabbitmq
 ```
 
+- Get jaeger host and modify in `values.yaml`
+
 - Copy ClusterIP to `deployments/lens/values.yaml`: `rabbitmq.host`
 ```bash
 cd deployments/lens
 helm upgrade --install lens .
 ```
+
 
 ### 3.4 Test
 - Get Minikube IP
@@ -90,3 +98,46 @@ minikube ip
 ```
 
 - Use web broser to access `minikubeIP/docs`. You should have the **FastAPI** doc.
+
+### 3.5 Monitoring
+```bash
+kubectl create namespace monitoring
+```
+- Setup secret
+```bash
+kubectl apply -f secret.yaml
+```
+
+- Elasticsearch
+```bash
+cd deployments/elasticsearch
+helm upgrade --install elasticsearch .
+```
+- Export Elasticsearch certificate for collecting log & apply this secret in model-serving cluster for deploying `filebeat`.
+```
+kubectl get secret elasticsearch -o yaml > elasticsearch-cert.yaml
+```
+- Kibana
+```bash
+cd deployments/kibana
+helm upgrade --install kibana .
+````
+- Filebeat
+```bash
+cd deployments/filebeat
+helm upgrade --install filebeat .
+```
+
+### 3.4 Metric
+
+- Grafana
+```bash
+cd deployments/monitoring/metrics/grafana
+helm upgrade --install grafana .
+```
+
+- Prometheus
+```bash
+cd deployments/monitoring/metrics/prometheus
+helm upgrade --install prometheus .
+```

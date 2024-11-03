@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          ports:
+            - name: jaeger-port
+              containerPort: {{ .Values.service.containerPort }}
+            - name: ui-port
+              containerPort: {{ .Values.service.uiPort }}

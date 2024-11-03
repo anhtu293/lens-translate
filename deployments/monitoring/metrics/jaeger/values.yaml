@@ -1,0 +1,6 @@
+image:
+  repository: jaegertracing/all-in-one
+  tag: 1.47
+service:
+  containerPort: 6831
+  uiPort: 16686
