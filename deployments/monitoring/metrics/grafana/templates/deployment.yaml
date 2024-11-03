@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: {{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}
+          ports:
+            - containerPort: {{ .Values.grafana.service.containerPort }}
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: grafana-dashboards
+              mountPath: /etc/grafana/provisioning/dashboards
+              readOnly: true
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+            - name: grafana-dashboards-dir
+              mountPath: /opt/grafana/dashboards
+              readOnly: true
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
+        - name: grafana-dashboards-dir
+          persistentVolumeClaim:
+            claimName: grafana-dashboards-dir
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-config
+            items:
+              - key: dashboards.yml
+                path: dashboards.yml
+        - name: grafana-datasources
+          configMap:
+            name: grafana-config
+            items:
+              - key: datasource.yaml
+                path: datasource.yaml

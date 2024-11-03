@@ -1,0 +1,83 @@
+version: "3.7"
+
+networks:
+  serving:
+    driver: bridge
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12.1-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+    networks:
+      - serving
+
+  ocr-app:
+    build:
+      context: ./ocr-app
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      METRIC_SERVICE_NAME: ${METRIC_SERVICE_NAME_OCR}
+      METRIC_SERVICE_VERSION: ${METRIC_SERVICE_VERSION_OCR}
+      JAEGER_AGENT_HOST: ${JAEGER_AGENT_HOST}
+      JAEGER_AGENT_PORT: ${JAEGER_AGENT_PORT}
+    networks:
+      - monitoring
+      - serving
+
+  translation-app:
+    build:
+      context: ./trans-app
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      METRIC_SERVICE_NAME: ${METRIC_SERVICE_NAME_TRANSLATION}
+      METRIC_SERVICE_VERSION: ${METRIC_SERVICE_VERSION_TRANSLATION}
+      JAEGER_AGENT_HOST: ${JAEGER_AGENT_HOST}
+      JAEGER_AGENT_PORT: ${JAEGER_AGENT_PORT}
+    networks:
+      - monitoring
+      - serving
+
+  lens-app:
+    build:
+      context: ./lens
+      dockerfile: Dockerfile
+    container_name: lens-app
+    ports:
+      - 8000:8000
+      - 8099:8099
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      METRIC_SERVICE_NAME: ${METRIC_SERVICE_NAME_LENS}
+      METRIC_SERVICE_VERSION: ${METRIC_SERVICE_VERSION_LENS}
+      JAEGER_AGENT_HOST: ${JAEGER_AGENT_HOST}
+      JAEGER_AGENT_PORT: ${JAEGER_AGENT_PORT}
+    networks:
+      - serving
+      - monitoring
