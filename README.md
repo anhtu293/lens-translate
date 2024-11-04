@@ -99,45 +99,18 @@ minikube ip
 
 - Use web broser to access `minikubeIP/docs`. You should have the **FastAPI** doc.
 
-### 3.5 Monitoring
-```bash
-kubectl create namespace monitoring
-```
-- Setup secret
-```bash
-kubectl apply -f secret.yaml
-```
+## 4. Deployment on GCP
 
-- Elasticsearch
-```bash
-cd deployments/elasticsearch
-helm upgrade --install elasticsearch .
-```
-- Export Elasticsearch certificate for collecting log & apply this secret in model-serving cluster for deploying `filebeat`.
-```
-kubectl get secret elasticsearch -o yaml > elasticsearch-cert.yaml
-```
-- Kibana
-```bash
-cd deployments/kibana
-helm upgrade --install kibana .
-````
-- Filebeat
-```bash
-cd deployments/filebeat
-helm upgrade --install filebeat .
-```
+We deploy our system on GCP using VMs for logging and monitoring and GKE (Google Kubenetes Engine) for model serving.
 
-### 3.4 Metric
+The deployment order is
+1. Deploy logging (ELK stack) on VM
+2. Deploy model serving with GKE
+3. Deploy system monitoring & tracing on VM
 
-- Grafana
-```bash
-cd deployments/monitoring/metrics/grafana
-helm upgrade --install grafana .
-```
+This section will go through each step.
 
-- Prometheus
-```bash
-cd deployments/monitoring/metrics/prometheus
-helm upgrade --install prometheus .
-```
+### 4.1 Deploy logging system
+- Create VM instance
+- Connect via ssh
+- Install ubuntu
