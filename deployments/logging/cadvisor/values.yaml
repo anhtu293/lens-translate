@@ -1,0 +1,14 @@
+# namespace: monitoring
+namespace: monitoring
+
+# docker image
+image:
+  repository: gcr.io/cadvisor/cadvisor
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# container port
+containerPort: 8080
+
+# host port
+hostPort: 55000
