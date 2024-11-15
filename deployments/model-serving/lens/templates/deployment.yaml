@@ -44,7 +44,7 @@ metadata:
   name: {{ .Release.Name }}-ocr-app
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 4
+  replicas: 3
   selector:
     matchLabels:
       app: {{ .Release.Name }}-ocr-app

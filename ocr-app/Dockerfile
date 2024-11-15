@@ -4,6 +4,8 @@ RUN apt-get -y  update; apt-get -y install sudo build-essential nano git wget li
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+RUN pip install easyocr==1.7.0
 
 WORKDIR /app
 

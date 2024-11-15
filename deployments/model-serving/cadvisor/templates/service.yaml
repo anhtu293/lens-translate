@@ -4,6 +4,7 @@ metadata:
   name: cadvisor
   namespace: {{ .Release.Namespace }}
 spec:
+  type: NodePort
   ports:
     - name: https
       port: 55000
