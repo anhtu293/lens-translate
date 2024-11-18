@@ -51,7 +51,7 @@ daemonset:
 
       output.elasticsearch:
         host: '${NODE_NAME}'
-        hosts: '34.55.246.249:9200'
+        hosts: '35.225.249.41:9200'
         username: '${ELASTICSEARCH_USERNAME}'
         password: '${ELASTICSEARCH_PASSWORD}'
         protocol: https

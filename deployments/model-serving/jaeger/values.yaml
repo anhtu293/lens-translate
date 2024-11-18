@@ -368,7 +368,7 @@ agent:
   cmdlineParams: {}
   extraEnv:
     - name: REPORTER_GRPC_HOST_PORT
-      value: 34.31.33.97:14250
+      value: 34.31.100.14:14250
   daemonset:
     useHostPort: false
     updateStrategy:

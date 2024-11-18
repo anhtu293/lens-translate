@@ -1262,23 +1262,23 @@ serverFiles:
       - job_name: "logging-cluster-node-exporter"
         scrape_interval: 5s
         static_configs:
-          - targets: ["34.44.188.23:9100"]
+          - targets: ["34.28.93.207:9100"]
       - job_name: "logging-cluster-cadvisor"
         scrape_interval: 5s
         static_configs:
-          - targets: ["34.44.188.23:55000"]
+          - targets: ["34.28.93.207:55000"]
       - job_name: "model-serving-node-exporter"
         scrape_interval: 5s
         static_configs:
-          - targets: ["34.66.37.248:9100"]
+          - targets: ["34.46.30.101:9100"]
       - job_name: "model-serving-cadvisor"
         scrape_interval: 5s
         static_configs:
-          - targets: ["34.66.37.248:55000"]
+          - targets: ["34.46.30.101:55000"]
       - job_name: "lens-app"
         scrape_interval: 5s
         static_configs:
-          - targets: ["34.41.109.187:8099"]
+          - targets: ["34.69.70.149:8099"]
 
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
