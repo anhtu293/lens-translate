@@ -7,6 +7,7 @@ lens_app:
   port: 8000
   metric_service_name: lens-service
   metric_service_version: "0.0.1"
+  metric_port: 8099
 
 ocr_app:
   image:

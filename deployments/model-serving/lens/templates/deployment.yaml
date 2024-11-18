@@ -19,6 +19,9 @@ spec:
           imagePullPolicy: {{ .Values.lens_app.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.lens_app.port }}
+              name: app-port
+            - containerPort: {{ .Values.lens_app.metric_port }}
+              name: metric-port
           env:
             - name: RABBITMQ_HOST
               value: "{{ .Values.rabbitmq.host }}"

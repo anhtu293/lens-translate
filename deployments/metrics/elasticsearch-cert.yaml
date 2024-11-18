@@ -7,7 +7,7 @@ data:
 kind: Secret
 metadata:
   annotations:
-    meta.helm.sh/release-namespace: model-serving
+    meta.helm.sh/release-namespace: metrics
   labels:
     app: elasticsearch-master
     app.kubernetes.io/managed-by: Helm
@@ -15,6 +15,6 @@ metadata:
     heritage: Helm
     release: elasticsearch
   name: elasticsearch-master-certs
-  namespace: model-serving
+  namespace: metrics
   resourceVersion: "67311"
 type: kubernetes.io/tls
