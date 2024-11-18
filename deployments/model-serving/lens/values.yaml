@@ -7,6 +7,7 @@ lens_app:
   port: 8000
   metric_service_name: lens-service
   metric_service_version: "0.0.1"
+  metric_port: 8099
 
 ocr_app:
   image:
@@ -25,10 +26,9 @@ translation_app:
   metric_service_version: "0.0.1"
 
 rabbitmq:
-  host: 10.103.235.85
+  host: rabbitmq
   user: rabbitmq
-  # password: rabbitmq
 
 jaeger:
-  agent_host: 192.168.49.2
-  agent_port: "30522"
+  agent_host: jaeger-agent
+  agent_port: "6831"

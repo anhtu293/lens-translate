@@ -12,4 +12,20 @@ spec:
     - port: 8000
       protocol: TCP
       targetPort: 8000
-  type: NodePort
+      name: app-port
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-lens-app-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-lens-app
+  ports:
+    - port: 8099
+      protocol: TCP
+      targetPort: 8099
+      name: metric-port
+  type: LoadBalancer

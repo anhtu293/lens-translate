@@ -1,0 +1,14 @@
+# namespace: monitoring
+namespace: monitoring
+
+# docker image
+image:
+  repository: prom/node-exporter
+  tag: "v1.3.1"
+  pullPolicy: IfNotPresent
+
+# container port
+containerPort: 9100
+
+# host port
+hostPort: 9100

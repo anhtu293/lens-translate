@@ -24,6 +24,8 @@ import base64
 from loguru import logger
 from time import time
 
+WAIT_TIME = 300
+
 
 METRIC_SERVICE_NAME = os.getenv("METRIC_SERVICE_NAME")
 METRIC_SERVICE_VERSION = os.getenv("METRIC_SERVICE_VERSION")
@@ -130,7 +132,7 @@ async def process_image(data: bytes, task_id: str) -> None:
                         break
                 else:
                     wait_count += 1
-                    if wait_count > 10:
+                    if wait_count > WAIT_TIME:
                         logger.error(f"OCR task {task_id} timeout")
                         ocr_ok = False
                         break
@@ -161,7 +163,7 @@ async def process_image(data: bytes, task_id: str) -> None:
                             break
                     else:
                         wait_count += 1
-                        if wait_count > 10:
+                        if wait_count > WAIT_TIME:
                             logger.error(f"Translation task {task_id} timeout")
                             translation_ok = False
                             break

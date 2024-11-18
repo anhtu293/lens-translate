@@ -49,22 +49,6 @@ services:
     networks:
       - monitoring
 
-  # alertmanager:
-  #   image: prom/alertmanager:v0.25.0
-  #   container_name: alertmanager
-  #   restart: unless-stopped
-  #   volumes:
-  #     - alertmanager_data:/alertmanager/data
-  #     - ./monitoring/alertmanager:/alertmanager
-  #   command:
-  #     - '--config.file=/alertmanager/config.yml'
-  #     - '--storage.path=/alertmanager/data'
-  #     - '--log.level=debug'
-  #   ports:
-  #     - 9093:9093
-  #   networks:
-  #     - monitoring
-
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
