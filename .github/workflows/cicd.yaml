@@ -4,8 +4,9 @@ on:
     # branches:
     #   - "master"
 
-permissions: read-all
-
+permissions:
+  contents: "read"
+  id-token: "write"
 jobs:
   Build-Docker-Image:
     runs-on: ubuntu-latest
