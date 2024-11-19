@@ -4,7 +4,7 @@ on:
     # branches:
     #   - "master"
 
-permissions: write-all
+permissions: read-all
 
 jobs:
   Build-Docker-Image:
@@ -24,21 +24,21 @@ jobs:
         with:
           context: ./lens
           file: ./lens/Dockerfile
-          tags: anhtu293/lens-app:${GITHUB_SHA}
+          tags: anhtu293/lens-app:${{ github.sha }}
           push: true
       - name: Build and Push OCR Docker Image
         uses: docker/build-push-action@v6
         with:
           context: ./ocr-app
           file: ./ocr-app/Dockerfile
-          tags: anhtu293/ocr-app:${GITHUB_SHA}
+          tags: anhtu293/ocr-app:${{ github.sha }}
           push: true
       - name: Build and Push Translation Docker Image
         uses: docker/build-push-action@v6
         with:
           context: ./trans-app
           file: ./trans-app/Dockerfile
-          tags: anhtu293/trans-app:${GITHUB_SHA}
+          tags: anhtu293/trans-app:${{ github.sha }}
           push: true
 
   Deploy-Model-Serving-Cluster:
