@@ -3,6 +3,9 @@ on:
   push:
     # branches:
     #   - "master"
+permissions:
+  id-token: write
+
 jobs:
   Build-Docker-Image:
     runs-on: ubuntu-latest
@@ -61,5 +64,8 @@ jobs:
           curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       - name: Deploy Lens App
         run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER \
+            --zone $GKE_ZONE \
+            --project $GKE_PROJECT
           cd deployments/model-serving
           helm upgrade --install app ./lens --set lens_app.image.tag=${GITHUB_SHA} --set ocr_app.image.tag=${GITHUB_SHA} --set translation_app.image.tag=${GITHUB_SHA} --namespace model-serving
