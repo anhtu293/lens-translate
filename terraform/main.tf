@@ -2,7 +2,7 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = "4.80.0" // Provider version
     }
   }
@@ -84,4 +84,18 @@ resource "google_container_node_pool" "metrics_cluster_nodes" {
     machine_type = "e2-standard-2"
     disk_size_gb = 50
   }
+}
+
+resource "google_compute_firewall" "allow_lens_app" {
+  name    = "allow-lens-app"
+  network = "default" // Replace with your network name if different
+
+  allow {
+    protocol = "tcp"
+    ports    = ["8099", "9100", "9200", "9300", "55000"]
+  }
+
+  direction     = "INGRESS"
+  source_ranges = ["0.0.0.0/0"]      // Allows traffic from all IPs
+  target_tags   = ["allow-lens-app"] // Optional: Use if you want to target specific VMs with this tag
 }

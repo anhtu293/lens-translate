@@ -1259,7 +1259,7 @@ serverFiles:
           - source_labels: [__meta_kubernetes_pod_node_name]
             action: replace
             target_label: node
-      - job_name: "logging-cluster-node-exporter"
+      - job_name: "logging-cluster-node-exporter" # id: 10
         scrape_interval: 5s
         static_configs:
           - targets: ["34.28.93.207:9100"]

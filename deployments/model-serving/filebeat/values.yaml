@@ -12,6 +12,8 @@ daemonset:
   # - configMapRef:
   #     name: config-secret
   extraEnvs:
+    - name: "ELASTICSEARCH_HOSTS"
+      value: "35.225.249.41:9200"
     - name: "ELASTICSEARCH_USERNAME"
       valueFrom:
         secretKeyRef:
@@ -51,7 +53,7 @@ daemonset:
 
       output.elasticsearch:
         host: '${NODE_NAME}'
-        hosts: '35.225.249.41:9200'
+        hosts: '${ELASTICSEARCH_HOSTS}'
         username: '${ELASTICSEARCH_USERNAME}'
         password: '${ELASTICSEARCH_PASSWORD}'
         protocol: https

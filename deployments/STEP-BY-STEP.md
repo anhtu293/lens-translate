@@ -282,11 +282,11 @@ You can access to prometheus with that IP.
 ```bash
 helm upgrade --install grafana ./grafana
 ```
-- Get IP of prometheus server
+- Get IP of grafana server
 ```bash
 kubectl get svc grafana -ojsonpath='{.status.loadBalancer.ingress[0].ip}'
 ```
-You can access to prometheus with that IP.
+You can access to grafana with that IP.
 ![](../images/prometheus.png)
 - Username is `admin` and Password
 ```bash
