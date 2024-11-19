@@ -24,6 +24,24 @@ resource "google_container_cluster" "logging_cluster" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Enable node auto-provisioning
+  cluster_autoscaling {
+    enabled = true
+
+    # Optional: Define resource limits for auto-provisioned nodes
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = 1
+      maximum       = 1
+    }
+
+    resource_limits {
+      resource_type = "memory"
+      minimum       = 1
+      maximum       = 1
+    }
+  }
 }
 
 resource "google_container_node_pool" "logging_cluster_nodes" {
@@ -36,6 +54,7 @@ resource "google_container_node_pool" "logging_cluster_nodes" {
     machine_type = "e2-standard-2"
     disk_size_gb = 50
   }
+
 }
 
 resource "google_container_cluster" "model_serving_cluster" {
@@ -48,6 +67,24 @@ resource "google_container_cluster" "model_serving_cluster" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Enable node auto-provisioning
+  cluster_autoscaling {
+    enabled = true
+
+    # Optional: Define resource limits for auto-provisioned nodes
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = 1
+      maximum       = 1
+    }
+
+    resource_limits {
+      resource_type = "memory"
+      minimum       = 1
+      maximum       = 1
+    }
+  }
 }
 
 resource "google_container_node_pool" "model_serving_cluster_nodes" {
@@ -72,6 +109,24 @@ resource "google_container_cluster" "metrics_cluster" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Enable node auto-provisioning
+  cluster_autoscaling {
+    enabled = true
+
+    # Optional: Define resource limits for auto-provisioned nodes
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = 1
+      maximum       = 1
+    }
+
+    resource_limits {
+      resource_type = "memory"
+      minimum       = 1
+      maximum       = 1
+    }
+  }
 }
 
 resource "google_container_node_pool" "metrics_cluster_nodes" {

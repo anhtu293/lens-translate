@@ -64,10 +64,11 @@ You can access different tool at:
 
 ## 4. Deployment on Google Cloud Platform
 
-We deploy our system on GCP on 3 clusters:
-1. `logging-cluster`: host ELK stack and **jaeger** for logging & tracing purpose.
-2. `metrics-cluster`: **prometheus** server and **grafana** for monitoring.
-3. `model-serving-cluster`: Model serving.
+We deploy our system on Google Cloud Platform (GCP) using three distinct clusters:
+
+1. **Logging Cluster**: Hosts the ELK stack and Jaeger for comprehensive logging and tracing.
+2. **Metrics Cluster**: Contains the Prometheus server and Grafana for effective monitoring.
+3. **Model Serving Cluster**: Dedicated to model serving operations.
 
 
 ### 4.1 Create clusters with `terraform`
@@ -89,10 +90,48 @@ You should find your clusters being created as below
 
 
 ### 4.1 Deploy clusters
-Because of the long deploying process, there is a `Makefile` and `bash` script implemented to handle the whole process. You should use it to deploy the whole system.
+Because the deployment process can be lengthy and complex, a `Makefile` and accompanying `bash` script have been implemented to automate and streamline the entire process. It is recommended to use these tools to deploy the system efficiently.
+- Setup env variables: Modify `deployments/env.sh` with your `PROJECT_ID` and `ZONE` of your cluster. The zone is used in terraform is `us-central1-c` by default.
+```
+export PROJECT_ID=YOUR_GCP_PROJECT_ID
+export ZONE=us-central1-c
+```
+- Launch
 ```bash
 cd deployments
-make all
+source ./env.sh
+source ./deploy.sh all
 ```
+When the deployment finishes, you have a file at `deployments/variables.sh` which contains some env variables. They are necessary information to connect to our system (application, logging, monitoring, tracing).
 
-For step-by-step setup, please follow the deployment guide [here](deployments/STEP-BY-STEP.md)
+
+>For step-by-step setup (very long), please follow the deployment guide [here](deployments/STEP-BY-STEP.md).
+
+When the process finishes, you put the IP (`echo $APP_IP` to get IP of the application) in your `/etc/hosts`: `THE_IP_OF_APP app.example.com`
+
+**Kibana**
+- `echo $KIBANA_IP` to get kibana address.
+- Connect with username `elastic` and password $KIBANA_PASSWORD.
+![](images/kibana_log.png)
+
+**Jaeger**
+- `echo $JAEGER_QUERY_HOST` to get JaegerUI address.
+![](images/jaegerui.png)
+
+**Grafana**
+- `echo $GRAFANA_IP` and you can access to grafana with that address.
+- Username is `admin` and Password
+```bash
+echo $GRAFANA_PASSWORD
+```
+- Go to dashboard, Click `New` - `Import`.
+![](images/grafana_import.png)
+- Type `14282` as dashboard ID then `Load` and enjoy your dashboard
+![](images/grafana_cadvisor_exporter.png)
+
+
+**Application**
+- Connect to `app.example.com/docs`.
+- Try `translate` with the example image in `images/example.jpeg`. The inference time is quite slow.
+- You can check kibana, jaeger and grafana for all the logs, metrics and tracings.
+![](images/fastapi_doc.png)

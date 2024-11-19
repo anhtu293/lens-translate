@@ -91,7 +91,7 @@ commonAnnotations: {}
 servicenameOverride: ""
 ## @param commonLabels Labels to add to all deployed objects
 ##
-commonLabels: {}
+commonLabels: { app: rabbitmq }
 ## @param serviceBindings.enabled Create secret for service binding (Experimental)
 ## Ref: https://servicebinding.io/service-provider/
 ##
@@ -1378,10 +1378,10 @@ metrics:
       scrapeTimeout: ""
       ## @param metrics.serviceMonitor.default.relabelings RelabelConfigs to apply to samples before scraping.
       ##
-      relabelings: [ ]
+      relabelings: []
       ## @param metrics.serviceMonitor.default.metricRelabelings MetricsRelabelConfigs to apply to samples before ingestion.
       ##
-      metricRelabelings: [ ]
+      metricRelabelings: []
       ## @param metrics.serviceMonitor.default.honorLabels honorLabels chooses the metric's labels on collisions with target labels
       ##
       honorLabels: false
@@ -1402,10 +1402,10 @@ metrics:
       scrapeTimeout: ""
       ## @param metrics.serviceMonitor.perObject.relabelings RelabelConfigs to apply to samples before scraping.
       ##
-      relabelings: [ ]
+      relabelings: []
       ## @param metrics.serviceMonitor.perObject.metricRelabelings MetricsRelabelConfigs to apply to samples before ingestion.
       ##
-      metricRelabelings: [ ]
+      metricRelabelings: []
       ## @param metrics.serviceMonitor.perObject.honorLabels honorLabels chooses the metric's labels on collisions with target labels
       ##
       honorLabels: false
@@ -1434,10 +1434,10 @@ metrics:
       scrapeTimeout: ""
       ## @param metrics.serviceMonitor.detailed.relabelings RelabelConfigs to apply to samples before scraping.
       ##
-      relabelings: [ ]
+      relabelings: []
       ## @param metrics.serviceMonitor.detailed.metricRelabelings MetricsRelabelConfigs to apply to samples before ingestion.
       ##
-      metricRelabelings: [ ]
+      metricRelabelings: []
       ## @param metrics.serviceMonitor.detailed.honorLabels honorLabels chooses the metric's labels on collisions with target labels
       ##
       honorLabels: false
@@ -1453,10 +1453,10 @@ metrics:
     scrapeTimeout: ""
     ## @param metrics.serviceMonitor.relabelings Deprecated. Please use `metrics.serviceMonitor.{default/perObject/detailed}` instead.
     ##
-    relabelings: [ ]
+    relabelings: []
     ## @param metrics.serviceMonitor.metricRelabelings Deprecated. Please use `metrics.serviceMonitor.{default/perObject/detailed}` instead.
     ##
-    metricRelabelings: [ ]
+    metricRelabelings: []
     ## @param metrics.serviceMonitor.honorLabels Deprecated. Please use `metrics.serviceMonitor.{default/perObject/detailed}` instead.
     ##
     honorLabels: false
@@ -1465,7 +1465,7 @@ metrics:
     path: ""
     ## @param metrics.serviceMonitor.params Deprecated. Please use `metrics.serviceMonitor.{default/perObject/detailed}` instead.
     ##
-    params: { }
+    params: {}
 
   ## Custom PrometheusRule to be defined
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
