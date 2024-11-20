@@ -60,9 +60,8 @@ You can access different tool at:
 - **prometheus**: `localhost:9090`
 - **grafana**: `localhost:3045`
 
-## 3. CI/CD
 
-## 4. Deployment on Google Cloud Platform
+## 3. Deployment on Google Cloud Platform
 
 We deploy our system on Google Cloud Platform (GCP) using three distinct clusters:
 
@@ -71,7 +70,7 @@ We deploy our system on Google Cloud Platform (GCP) using three distinct cluster
 3. **Model Serving Cluster**: Dedicated to model serving operations.
 
 
-### 4.1 Create clusters with `terraform`
+### 3.1 Create clusters with `terraform`
 You need **terraform** to setup the clusters. [Instal guide here](https://computingforgeeks.com/how-to-install-terraform-on-ubuntu/).
 
 Authenticate
@@ -89,7 +88,7 @@ You should find your clusters being created as below
 ![](images/gke.png)
 
 
-### 4.1 Deploy clusters
+### 3.2 Deploy clusters
 Because the deployment process can be lengthy and complex, a `Makefile` and accompanying `bash` script have been implemented to automate and streamline the entire process. It is recommended to use these tools to deploy the system efficiently.
 - Setup env variables: Modify `deployments/env.sh` with your `PROJECT_ID` and `ZONE` of your cluster. The zone is used in terraform is `us-central1-c` by default.
 ```
@@ -102,12 +101,31 @@ cd deployments
 source ./env.sh
 source ./deploy.sh all
 ```
-When the deployment finishes, you have a file at `deployments/variables.sh` which contains some env variables. They are necessary information to connect to our system (application, logging, monitoring, tracing).
+When the deployment starts, you have the logs in your terminal as below.
+![](images/deploy.png)
+
+When the deployment finishes, you have a file at `deployments/variables.sh` which contains some env variables. They are necessary information to connect to our system (application, logging, monitoring, tracing). Example:
+```bash
+export ELASTICSEARCH_IP=34.69.4.124
+export KIBANA_IP=34.135.248.187
+export KIBANA_PASSWORD=lensappelastic
+export JAEGER_COLLECTOR_HOST=34.30.199.54
+export JAEGER_QUERY_HOST=35.232.197.109
+export LOGGING_NODE_IP=34.31.28.88
+export RABBITMQ_PASSWORD=asdfvcxefaf
+export MODEL_SERVING_NODE_IP=34.57.188.243
+export APP_METRIC_HOST=35.222.162.147
+export APP_IP=34.133.128.72
+export PROMETHEUS_IP=34.56.219.246
+export GRAFANA_IP=34.122.44.148
+export GRAFANA_PASSWORD=QREvEFco4QztMbj8D7aeFQqfbFA8TDt8Q2TuohiH
+```
+You can do `source ./deployments/variables.sh` to set these env variables in your current shell.
 
 
 >For step-by-step setup (very long), please follow the deployment guide [here](deployments/STEP-BY-STEP.md).
 
-When the process finishes, you put the IP (`echo $APP_IP` to get IP of the application) in your `/etc/hosts`: `THE_IP_OF_APP app.example.com`
+When the process finishes, you put the IP (`$APP_IP`) in your `/etc/hosts`: `THE_IP_OF_APP app.example.com`
 
 **Kibana**
 - `echo $KIBANA_IP` to get kibana address.
@@ -135,3 +153,14 @@ echo $GRAFANA_PASSWORD
 - Try `translate` with the example image in `images/example.jpeg`. The inference time is quite slow.
 - You can check kibana, jaeger and grafana for all the logs, metrics and tracings.
 ![](images/fastapi_doc.png)
+
+## 4. Setup CI/CD
+Github action is used for CI/CD of this project. There are 2 workflows:
+- `unittest`: linting and unit tests, triggered for every push in any branche.
+- `deployment`: triggered after merging or push to `master`. New docker images will be built and push to **dockerhub**, tag of new docker images is the commit hash. After pushing new docker images to **dockerhub**, the application is updated automatically with new docker images.
+
+In order to use this CI/CD, follow the following guide.
+
+### 4.1 Setup Google service account
+
+### 4.2 Setup github action secrets
