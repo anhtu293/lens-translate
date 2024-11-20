@@ -39,7 +39,7 @@ jobs:
         with:
           context: ./trans-app
           file: ./trans-app/Dockerfile
-          tags: anhtu293/trans-app:${{ github.sha }}
+          tags: anhtu293/translation-app:${{ github.sha }}
           push: true
 
   Deploy-Model-Serving-Cluster:
