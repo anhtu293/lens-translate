@@ -1101,19 +1101,19 @@ serverFiles:
         - null
         - static_configs:
             targets:
-              - 35.192.156.248:9100
+              - 34.31.28.88:9100
         - static_configs:
             targets:
-              - 35.192.156.248:55000
+              - 34.31.28.88:55000
         - static_configs:
             targets:
-              - 34.172.16.156:9100
+              - 34.57.188.243:9100
         - static_configs:
             targets:
-              - 34.172.16.156:55000
+              - 34.57.188.243:55000
         - static_configs:
             targets:
-              - 34.170.49.102:8099
+              - 35.222.162.147:8099
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
 # example adds prometheus-blackbox-exporter scrape config

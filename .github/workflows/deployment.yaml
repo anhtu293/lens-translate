@@ -48,24 +48,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@f112390a2df9932162083945e46d439060d66ec2" # google-github-actions/auth@v2
         with:
-          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
       # Get the GKE credentials so we can deploy to the cluster
       - name: "Set up GKE credentials"
         uses: "google-github-actions/get-gke-credentials@6051de21ad50fbb1767bc93c11357a49082ad116" # google-github-actions/get-gke-credentials@v2
         with:
-          cluster_name: "${{ secrets.GKE_CLUSTER }}"
-          location: "${{ secrets.GKE_ZONE }}"
+          cluster_name: "${{ vars.GKE_CLUSTER }}"
+          location: "${{ vars.GKE_ZONE }}"
+
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
       - name: Deploy Lens App
         run: |
-          gcloud container clusters get-credentials $GKE_CLUSTER \
-            --zone $GKE_ZONE \
-            --project $GKE_PROJECT
+          gcloud container clusters get-credentials ${{ vars.GKE_CLUSTER }} \
+            --zone ${{ vars.GKE_ZONE }} \
+            --project ${{ secrets.GKE_PROJECT }}
           cd deployments/model-serving
-          helm upgrade --install app ./lens --set lens_app.image.tag=${GITHUB_SHA} --set ocr_app.image.tag=${GITHUB_SHA} --set translation_app.image.tag=${GITHUB_SHA} --namespace model-serving
+          helm upgrade --install app ./lens --set lens_app.image.tag=${{ github.sha }} --set ocr_app.image.tag=${{ github.sha }} --set translation_app.image.tag=${{ github.sha }} --namespace model-serving

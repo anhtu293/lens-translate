@@ -13,7 +13,7 @@ daemonset:
   #     name: config-secret
   extraEnvs:
     - name: "ELASTICSEARCH_HOSTS"
-      value: "34.121.164.11:9200"
+      value: "34.69.4.124:9200"
     - name: "ELASTICSEARCH_USERNAME"
       valueFrom:
         secretKeyRef:
