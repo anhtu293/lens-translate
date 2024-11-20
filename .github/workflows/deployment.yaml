@@ -1,8 +1,10 @@
 name: Deploy Model Serving Cluster GKE
 on:
   push:
-    # branches:
-    #   - "master"
+    branches:
+      - "master"
+    paths-ignore:
+      - "*.md"
 
 permissions:
   contents: "read"

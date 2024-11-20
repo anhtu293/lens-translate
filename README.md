@@ -157,10 +157,49 @@ echo $GRAFANA_PASSWORD
 ## 4. Setup CI/CD
 Github action is used for CI/CD of this project. There are 2 workflows:
 - `unittest`: linting and unit tests, triggered for every push in any branche.
-- `deployment`: triggered after merging or push to `master`. New docker images will be built and push to **dockerhub**, tag of new docker images is the commit hash. After pushing new docker images to **dockerhub**, the application is updated automatically with new docker images.
+- `deployment`: triggered after merging or push to `master` (except push with modifications in markdown files). New docker images will be built and push to **dockerhub**, tag of new docker images is the commit hash. After pushing new docker images to **dockerhub**, the application is updated automatically with new docker images.
+
+**Unit test workflow**
+![](images/workflow-unittest.png)
+
+**Deployment workflow**
+![](images/workflow-deployment.png)
 
 In order to use this CI/CD, follow the following guide.
 
 ### 4.1 Setup Google service account
+- Search for **Service Accounts** on Google Cloud Platform.
+![](images/gcp_iam.png)
 
-### 4.2 Setup github action secrets
+- Click on **Create Service Account**
+![](images/gcp_iam2.png)
+
+- Fill in **Account name** and **Description**, then click **Create and Continue**
+![](images/svcAcc.png)
+
+- You need to select the role of this service account, you can choose as below. This role allows to manage GKE clusters.
+![](images/svcAcc2.png)
+- Click on the account that you create, go on **Keys**, then choose **Add key** --> **Create new key** (choose json)
+![](images/svcAcc3.png)
+
+- You download the service account key file. We will add it in github secrets to use in our deployment workflow.
+
+### 4.2 Setup github action secrets & variables
+- From repository, click **Setting**
+![](images/gh-secrets.png)
+
+- From **Security**, choose **Secrets and variables**, then **Action**.
+![](images/gh-secret2.png)
+
+- Choose **Variables**, **New repository variable**. Create 2 variables:
+    - `GKE_CLUSTER`: `model-serving-cluster`
+    - `GKE_ZONE`: `us-central1-c` (if you use other zone in terraform/main.tf, you put your zone here).
+![](images/gh-secret3.png)
+
+- Choose **Secrets**, **New repository secret**. Create following secrets:
+    - **DOCKER_USERNAME**: dockerhub account to push built images during CI/CD
+    - **DOCKER_PASSWORD**: password of dockerhub account
+    - **GCP_CREDENTIALS**: copy the content of the GCP `service account key file` created in **Section 4.1**. This file is used to authenticate to GCP.
+    - **GCP_SERVICE_ACCOUNT**: the service account ID
+    - **GKE_PROJECT**: name of the GCP project.
+![](images/gh-secrets4.png)
