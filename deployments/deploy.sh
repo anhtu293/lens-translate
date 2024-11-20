@@ -246,11 +246,11 @@ deploy_metrics_cluster() {
     echo "Filebeat is launched."
 
     # Deploy prometheus
-    yq eval ".serverFiles.prometheus.yml.scrape_configs[10].static_configs.targets[0] = \"$LOGGING_NODE_IP:9100\"" -i metrics/prometheus/values.yaml
-    yq eval ".serverFiles.prometheus.yml.scrape_configs[11].static_configs.targets[0] = \"$LOGGING_NODE_IP:55000\"" -i metrics/prometheus/values.yaml
-    yq eval ".serverFiles.prometheus.yml.scrape_configs[12].static_configs.targets[0] = \"$MODEL_SERVING_NODE_IP:9100\"" -i metrics/prometheus/values.yaml
-    yq eval ".serverFiles.prometheus.yml.scrape_configs[13].static_configs.targets[0] = \"$MODEL_SERVING_NODE_IP:55000\"" -i metrics/prometheus/values.yaml
-    yq eval ".serverFiles.prometheus.yml.scrape_configs[14].static_configs.targets[0] = \"$APP_METRIC_HOST:8099\"" -i metrics/prometheus/values.yaml
+    yq eval ".serverFiles.\"prometheus.yml\".scrape_configs[10].static_configs[0].targets[0] = \"$LOGGING_NODE_IP:9100\"" -i metrics/prometheus/values.yaml
+    yq eval ".serverFiles.\"prometheus.yml\".scrape_configs[11].static_configs[0].targets[0] = \"$LOGGING_NODE_IP:55000\"" -i metrics/prometheus/values.yaml
+    yq eval ".serverFiles.\"prometheus.yml\".scrape_configs[12].static_configs[0].targets[0] = \"$MODEL_SERVING_NODE_IP:9100\"" -i metrics/prometheus/values.yaml
+    yq eval ".serverFiles.\"prometheus.yml\".scrape_configs[13].static_configs[0].targets[0] = \"$MODEL_SERVING_NODE_IP:55000\"" -i metrics/prometheus/values.yaml
+    yq eval ".serverFiles.\"prometheus.yml\".scrape_configs[14].static_configs[0].targets[0] = \"$APP_METRIC_HOST:8099\"" -i metrics/prometheus/values.yaml
     deploy_component "prometheus" "./metrics/prometheus" ""
     # wait for prometheus to be ready
     echo "Waiting for prometheus to be ready..."
