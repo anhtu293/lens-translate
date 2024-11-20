@@ -3,12 +3,24 @@
 This application can directly translate English text from images into Vietnamese.
 The purpose of this project is to develop and deploy a machine learning application at scale.
 
-## 1. Application Design
-The application consists of the following components:
-![text](images/pipeline.png)
-- **OCR Service** and **Translation Service** are separated services to improve scalability and overall application throughput.
+## 1. System architecture with Kubernetes (K8s)
+![](images/archi.png)
 
-### Architecture Flow
+
+### Note
+-  **deployments**: Deploy clusters with K8s and `helm`
+- **lens**: `lens-translation` application
+- **monitoring**: configs for monitoring system, only use for local deployment with `docker compose`
+- **ocr-app**: OCR model serving
+- **terraform**: Create clusters on GCP
+- **trans-app**: Translation model serving
+- **unitests**: Unit test for CI/CD
+- **images**: images for documentation
+
+
+### Model serving flow
+![text](images/pipeline.png)
+
 1. User uploads an image. Image is then sent to **lens-app**
 2. Image is sent to **OCR Service** for text detection via `OCR Queue`
 3. **OCR Service** detects text in images and sends results to `OCR Results Queue`
@@ -89,7 +101,7 @@ You should find your clusters being created as below
 
 
 ### 3.2 Deploy clusters
-Because the deployment process can be lengthy and complex, a `Makefile` and accompanying `bash` script have been implemented to automate and streamline the entire process. It is recommended to use these tools to deploy the system efficiently.
+Because the deployment process can be lengthy and complex, a `bash` script has been implemented to automate and streamline the entire process. It is recommended to use these tools to deploy the system efficiently.
 - Setup env variables: Modify `deployments/env.sh` with your `PROJECT_ID` and `ZONE` of your cluster. The zone is used in terraform is `us-central1-c` by default.
 ```
 export PROJECT_ID=YOUR_GCP_PROJECT_ID
@@ -150,14 +162,18 @@ echo $GRAFANA_PASSWORD
 
 **Application**
 - Connect to `app.example.com/docs`.
-- Try `translate` with the example image in `images/example.jpeg`. The inference time is quite slow.
+- Try `translate` with the example image in `images/example.jpeg`. The inference time is quite slow. **The expected results:**
+![](images/example-results.jpeg)
+
+
 - You can check kibana, jaeger and grafana for all the logs, metrics and tracings.
 ![](images/fastapi_doc.png)
 
 ## 4. Setup CI/CD
-Github action is used for CI/CD of this project. There are 2 workflows:
-- `unittest`: linting and unit tests, triggered for every push in any branche.
-- `deployment`: triggered after merging or push to `master` (except push with modifications in markdown files). New docker images will be built and push to **dockerhub**, tag of new docker images is the commit hash. After pushing new docker images to **dockerhub**, the application is updated automatically with new docker images.
+GitHub Actions is utilized for the CI/CD processes in this project. There are two workflows:
+
+- **Unittest**: This workflow handles linting and unit tests. It is triggered with every push to any branch.
+- **Deployment**: This workflow is activated after a merge or a push to the `master` branch, except when the changes are limited to markdown files. It builds new Docker images and pushes them to Docker Hub, using the commit hash as the image tag. Once the new Docker images are pushed, the application is automatically updated with these images.
 
 **Unit test workflow**
 ![](images/workflow-unittest.png)
@@ -177,7 +193,7 @@ In order to use this CI/CD, follow the following guide.
 - Fill in **Account name** and **Description**, then click **Create and Continue**
 ![](images/svcAcc.png)
 
-- You need to select the role of this service account, you can choose as below. This role allows to manage GKE clusters.
+- Select the role of this service account, you can choose as below. This role allows to manage GKE clusters.
 ![](images/svcAcc2.png)
 - Click on the account that you create, go on **Keys**, then choose **Add key** --> **Create new key** (choose json)
 ![](images/svcAcc3.png)
