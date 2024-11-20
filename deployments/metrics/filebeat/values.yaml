@@ -12,6 +12,8 @@ daemonset:
   # - configMapRef:
   #     name: config-secret
   extraEnvs:
+    - name: "ELASTICSEARCH_HOSTS"
+      value: "34.69.4.124:9200"
     - name: "ELASTICSEARCH_USERNAME"
       valueFrom:
         secretKeyRef:
@@ -51,7 +53,7 @@ daemonset:
 
       output.elasticsearch:
         host: '${NODE_NAME}'
-        hosts: '35.225.249.41:9200'
+        hosts: '${ELASTICSEARCH_HOSTS}'
         username: '${ELASTICSEARCH_USERNAME}'
         password: '${ELASTICSEARCH_PASSWORD}'
         protocol: https
@@ -83,7 +85,6 @@ daemonset:
       cpu: "1000m"
       memory: "200Mi"
   tolerations: []
-
 deployment:
   # Annotations to apply to the deployment
   annotations: {}
@@ -155,10 +156,8 @@ deployment:
       cpu: "1000m"
       memory: "200Mi"
   tolerations: []
-
 # Replicas being used for the filebeat deployment
 replicas: 1
-
 extraContainers: ""
 # - name: dummy-init
 #   image: busybox
@@ -169,7 +168,6 @@ extraInitContainers: []
 
 # Root directory where Filebeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
 hostPathRoot: /var/lib
-
 dnsConfig: {}
 # options:
 #   - name: ndots
@@ -183,7 +181,6 @@ image: "docker.elastic.co/beats/filebeat"
 imageTag: "8.5.1"
 imagePullPolicy: "IfNotPresent"
 imagePullSecrets: []
-
 livenessProbe:
   exec:
     command:
@@ -196,7 +193,6 @@ livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
-
 readinessProbe:
   exec:
     command:
@@ -209,10 +205,8 @@ readinessProbe:
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
-
 # Whether this chart should self-manage its service account, role, and associated role binding.
 managedServiceAccount: true
-
 clusterRoleRules:
   - apiGroups:
       - ""
@@ -232,13 +226,11 @@ clusterRoleRules:
       - get
       - list
       - watch
-
 podAnnotations: {}
 # iam.amazonaws.com/role: es-cluster
 
 # Custom service account override that the pod will use
 serviceAccount: ""
-
 # Annotations to add to the ServiceAccount that is created if the serviceAccount value isn't set.
 serviceAccountAnnotations: {}
 # eks.amazonaws.com/role-arn: arn:aws:iam::111111111111:role/k8s.clustername.namespace.serviceaccount
@@ -248,9 +240,7 @@ terminationGracePeriod: 30
 # This is the PriorityClass settings as defined in
 # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
 priorityClassName: ""
-
 updateStrategy: RollingUpdate
-
 # Override various naming aspects of this chart
 # Only edit these if you know what you're doing
 nameOverride: ""

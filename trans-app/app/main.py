@@ -54,7 +54,9 @@ def process_translation_task(ch, method, properties, body):
 
             translations = []
 
-            with tracer.start_as_current_span("translation-service-translate", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "translation-service-translate", links=[trace.Link(span.get_span_context())]
+            ):
                 for i, input in enumerate(task["texts"]):
                     eng_input = f"en: {input}"
                     inputs = tokenizer(eng_input, return_tensors="pt", padding=True).input_ids
@@ -63,7 +65,9 @@ def process_translation_task(ch, method, properties, body):
                     result = result.replace("vi: ", "")
                     translations.append(result)
 
-            with tracer.start_as_current_span("translation-service-publish", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "translation-service-publish", links=[trace.Link(span.get_span_context())]
+            ):
                 channel.basic_publish(
                     exchange="",
                     routing_key="translation_results",

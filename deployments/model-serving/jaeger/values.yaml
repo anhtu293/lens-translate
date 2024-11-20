@@ -4,21 +4,16 @@
 
 global:
   imageRegistry:
-
 provisionDataStore:
   cassandra: false
   elasticsearch: false
   kafka: false
-
 networkPolicy:
   enabled: false
-
 # Overrides the image tag where default is the chart appVersion.
 tag: ""
-
 nameOverride: ""
 fullnameOverride: ""
-
 allInOne:
   enabled: false
   replicas: 1
@@ -29,25 +24,23 @@ allInOne:
     digest: ""
     pullPolicy: IfNotPresent
     pullSecrets: []
-  extraEnv:
-    []
-    # - name: ES_SERVER_URLS
-    #   value: http://34.27.115.172:9200
-    # - name: ES_USERNAME
-    #   value: elastic
-    # - name: ES_PASSWORD
-    #   value: lensappelastic
-    # - name: ES_INDEX_PREFIX
-    #   value: jaeger
-    # - name: SPAN_STORAGE_TYPE
-    #   value: elasticsearch
-  extraSecretMounts:
-    []
-    # - name: jaeger-tls
-    #   mountPath: /tls
-    #   subPath: ""
-    #   secretName: jaeger-tls
-    #   readOnly: true
+  extraEnv: []
+  # - name: ES_SERVER_URLS
+  #   value: http://34.27.115.172:9200
+  # - name: ES_USERNAME
+  #   value: elastic
+  # - name: ES_PASSWORD
+  #   value: lensappelastic
+  # - name: ES_INDEX_PREFIX
+  #   value: jaeger
+  # - name: SPAN_STORAGE_TYPE
+  #   value: elasticsearch
+  extraSecretMounts: []
+  # - name: jaeger-tls
+  #   mountPath: /tls
+  #   subPath: ""
+  #   secretName: jaeger-tls
+  #   readOnly: true
   # command line arguments / CLI flags
   # See https://www.jaegertracing.io/docs/cli/
   args: []
@@ -116,7 +109,6 @@ allInOne:
     runAsGroup: 10001
     fsGroup: 10001
   securityContext: {}
-
 storage:
   # allowed values (cassandra, elasticsearch, grpc-plugin, badger, memory)
   type: elasticsearch
@@ -136,23 +128,21 @@ storage:
     ## Use existing secret (ignores previous password)
     # existingSecret:
     ## Cassandra related env vars to be configured on the concerned components
-    extraEnv:
-      []
-      # - name: CASSANDRA_SERVERS
-      #   value: cassandra
-      # - name: CASSANDRA_PORT
-      #   value: "9042"
-      # - name: CASSANDRA_KEYSPACE
-      #   value: jaeger_v1_test
-      # - name: CASSANDRA_TLS_ENABLED
-      #   value: "false"
+    extraEnv: []
+    # - name: CASSANDRA_SERVERS
+    #   value: cassandra
+    # - name: CASSANDRA_PORT
+    #   value: "9042"
+    # - name: CASSANDRA_KEYSPACE
+    #   value: jaeger_v1_test
+    # - name: CASSANDRA_TLS_ENABLED
+    #   value: "false"
     ## Cassandra related cmd line opts to be configured on the concerned components
-    cmdlineParams:
-      {}
-      # cassandra.servers: cassandra
-      # cassandra.port: 9042
-      # cassandra.keyspace: jaeger_v1_test
-      # cassandra.tls.enabled: "false"
+    cmdlineParams: {}
+    # cassandra.servers: cassandra
+    # cassandra.port: 9042
+    # cassandra.keyspace: jaeger_v1_test
+    # cassandra.tls.enabled: "false"
   elasticsearch:
     scheme: https
     host: elasticsearch-master
@@ -180,7 +170,6 @@ storage:
       subPath: ca.crt
       # How ES_TLS_CA variable will be set in the various components
       ca: /es-tls/ca-cert.pem
-
   kafka:
     brokers:
       - kafka:9092
@@ -197,7 +186,6 @@ storage:
     extraEnv: []
   memory:
     extraEnv: []
-
 # Begin: Override values on the Cassandra subchart to customize for Jaeger
 cassandra:
   persistence:
@@ -253,14 +241,13 @@ schema:
     digest: ""
     pullPolicy: IfNotPresent
     pullSecrets: []
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -272,19 +259,16 @@ schema:
   podSecurityContext: {}
   ## Deadline for cassandra schema creation job
   activeDeadlineSeconds: 300
-  extraEnv:
-    []
-    # - name: MODE
-    #   value: prod
-    # - name: TRACE_TTL
-    #   value: "172800"
-    # - name: DEPENDENCIES_TTL
-    #   value: "0"
-
+  extraEnv: []
+  # - name: MODE
+  #   value: prod
+  # - name: TRACE_TTL
+  #   value: "172800"
+  # - name: DEPENDENCIES_TTL
+  #   value: "0"
 # For configurable values of the elasticsearch if provisioned, please see:
 # https://github.com/bitnami/charts/tree/main/bitnami/elasticsearch
 elasticsearch: {}
-
 ingester:
   enabled: false
   podSecurityContext: {}
@@ -312,14 +296,13 @@ ingester:
     # List of IP ranges that are allowed to access the load balancer (if supported)
     loadBalancerSourceRanges: []
     type: ClusterIP
-  resources:
-    {}
-    # limits:
-    #   cpu: 1
-    #   memory: 1Gi
-    # requests:
-    #   cpu: 500m
-    #   memory: 512Mi
+  resources: {}
+  # limits:
+  #   cpu: 1
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 500m
+  #   memory: 512Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -343,7 +326,6 @@ ingester:
   extraEnv: []
   envFrom: []
   initContainers: []
-
   serviceMonitor:
     enabled: false
     additionalLabels: {}
@@ -352,7 +334,6 @@ ingester:
     # -- ServiceMonitor metric relabel configs to apply to samples before ingestion
     # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
     metricRelabelings: []
-
 agent:
   podSecurityContext: {}
   securityContext: {}
@@ -368,14 +349,13 @@ agent:
   cmdlineParams: {}
   extraEnv:
     - name: REPORTER_GRPC_HOST_PORT
-      value: 34.31.100.14:14250
+      value: 34.30.199.54:14250
   daemonset:
     useHostPort: false
-    updateStrategy:
-      {}
-      # type: RollingUpdate
-      # rollingUpdate:
-      #   maxUnavailable: 1
+    updateStrategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxUnavailable: 1
   service:
     annotations: {}
     # List of IP ranges that are allowed to access the load balancer (if supported)
@@ -389,14 +369,13 @@ agent:
     binaryPort: 6832
     # samplingPort: (HTTP) serve configs, sampling strategies
     samplingPort: 5778
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -427,7 +406,6 @@ agent:
   dnsPolicy: ClusterFirst
   priorityClassName: ""
   initContainers: []
-
   serviceMonitor:
     enabled: false
     additionalLabels: {}
@@ -436,7 +414,6 @@ agent:
     # -- ServiceMonitor metric relabel configs to apply to samples before ingestion
     # https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#endpoint
     metricRelabelings: []
-
 collector:
   podSecurityContext: {}
   securityContext: {}
@@ -453,8 +430,8 @@ collector:
   extraEnv: []
   envFrom: []
   cmdlineParams:
-    # es.tls.ca: "/tls/es.pem"
-    # es.sniffer: "false"
+  # es.tls.ca: "/tls/es.pem"
+  # es.sniffer: "false"
   basePath: /
   replicaCount: 1
   autoscaling:
@@ -481,10 +458,9 @@ collector:
       port: 14268
       # nodePort:
     # can accept Zipkin spans in JSON or Thrift
-    zipkin:
-      {}
-      # port: 9411
-      # nodePort:
+    zipkin: {}
+    # port: 9411
+    # nodePort:
     otlp:
       grpc:
         name: otlp-grpc
@@ -524,14 +500,13 @@ collector:
     #   hosts:
     #     - chart-example.local
     pathType:
-  resources:
-    {}
-    # limits:
-    #   cpu: 1
-    #   memory: 1Gi
-    # requests:
-    #   cpu: 500m
-    #   memory: 512Mi
+  resources: {}
+  # limits:
+  #   cpu: 1
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 500m
+  #   memory: 512Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -556,13 +531,12 @@ collector:
   #   subPath: ""
   #   secretName: jaeger-tls
   #   readOnly: true
-  extraConfigmapMounts:
-    []
-    # - name: jaeger-tls
-    #   mountPath: /tls
-    #   subPath: ""
-    #   configMap: jaeger-tls
-    #   readOnly: true
+  extraConfigmapMounts: []
+  # - name: jaeger-tls
+  #   mountPath: /tls
+  #   subPath: ""
+  #   configMap: jaeger-tls
+  #   readOnly: true
   # - name: jaeger-config
   #   mountPath: /config
   #   subPath: ""
@@ -619,21 +593,19 @@ collector:
     #   namespaceSelector: {}
     #   podSelector: {}
     #   customRules: []
-
 query:
   enabled: false
   basePath: /
   initContainers: []
   oAuthSidecar:
     enabled: false
-    resources:
-      {}
-      # limits:
-      #   cpu: 500m
-      #   memory: 512Mi
-      # requests:
-      #   cpu: 256m
-      #   memory: 128Mi
+    resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 256m
+    #   memory: 128Mi
     image:
       registry: quay.io
       repository: oauth2-proxy/oauth2-proxy
@@ -719,14 +691,13 @@ query:
     pathType:
     health:
       exposed: false
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #    cpu: 256m
-    #    memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #    cpu: 256m
+  #    memory: 128Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -740,13 +711,12 @@ query:
   ## Additional pod labels
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   podLabels: {}
-  extraConfigmapMounts:
-    []
-    # - name: jaeger-tls
-    #   mountPath: /tls
-    #   subPath: ""
-    #   configMap: jaeger-tls
-    #   readOnly: true
+  extraConfigmapMounts: []
+  # - name: jaeger-tls
+  #   mountPath: /tls
+  #   subPath: ""
+  #   configMap: jaeger-tls
+  #   readOnly: true
   # - name: jaeger-config
   #   mountPath: /config
   #   subPath: ""
@@ -790,7 +760,6 @@ query:
     #   namespaceSelector: {}
     #   podSelector: {}
     #   customRules: []
-
 spark:
   enabled: false
   securityContext: {}
@@ -809,14 +778,13 @@ spark:
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
   concurrencyPolicy: Forbid
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     annotations: {}
@@ -833,7 +801,6 @@ spark:
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   podLabels: {}
   # ttlSecondsAfterFinished: 120
-
 esIndexCleaner:
   enabled: false
   securityContext:
@@ -849,22 +816,20 @@ esIndexCleaner:
     pullPolicy: IfNotPresent
     pullSecrets: []
   cmdlineParams: {}
-  extraEnv:
-    []
-    # - name: ROLLOVER
-    #   value: 'true'
+  extraEnv: []
+  # - name: ROLLOVER
+  #   value: 'true'
   schedule: "55 23 * * *"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   numberOfDays: 7
   serviceAccount:
     create: true
@@ -882,7 +847,6 @@ esIndexCleaner:
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   podLabels: {}
   # ttlSecondsAfterFinished: 120
-
 esRollover:
   enabled: false
   securityContext: {}
@@ -904,14 +868,13 @@ esRollover:
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -928,15 +891,13 @@ esRollover:
   podLabels: {}
   # ttlSecondsAfterFinished: 120
   initHook:
-    extraEnv:
-      []
-      # - name: SHARDS
-      #   value: "3"
+    extraEnv: []
+    # - name: SHARDS
+    #   value: "3"
     annotations: {}
     podAnnotations: {}
     podLabels: {}
     ttlSecondsAfterFinished: 120
-
 esLookback:
   enabled: false
   securityContext: {}
@@ -960,14 +921,13 @@ esLookback:
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
-  resources:
-    {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 256m
-    #   memory: 128Mi
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 256m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     annotations: {}
@@ -1024,28 +984,26 @@ hotrod:
     # Used to create Ingress record (should be used with service.type: ClusterIP).
     hosts:
       - chart-example.local
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
     tls:
-      # Secrets must be manually created in the namespace.
-      # - secretName: chart-example-tls
-      #   hosts:
-      #     - chart-example.local
+    # Secrets must be manually created in the namespace.
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
     pathType:
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
   serviceAccount:
     create: true
     # Explicitly mounts the API credentials for the Service Account
@@ -1058,6 +1016,5 @@ hotrod:
   tracing:
     host: null
     port: 6831
-
 # Array with extra yaml objects to install alongside the chart. Values are evaluated as a template.
 extraObjects: []
