@@ -74,6 +74,7 @@ jobs:
 
       - name: Deploy Lens App
         run: |
+          USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials ${{ vars.GKE_CLUSTER }} \
             --zone ${{ vars.GKE_ZONE }} \
             --project ${{ secrets.GKE_PROJECT }}
