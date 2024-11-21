@@ -219,3 +219,5 @@ In order to use this CI/CD, follow the following guide.
     - **GCP_SERVICE_ACCOUNT**: the service account ID
     - **GKE_PROJECT**: name of the GCP project.
 ![](images/gh-secrets4.png)
+
+###
