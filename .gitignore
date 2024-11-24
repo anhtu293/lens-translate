@@ -170,3 +170,7 @@ models/
 terraform.tfstate
 terraform.tfstate.backup
 hashicorp
+*.tfstate
+*.tfstate.backup
+
+deployments/variables.sh

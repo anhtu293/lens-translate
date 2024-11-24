@@ -15,7 +15,7 @@ import json
 from loguru import logger
 import base64
 import numpy as np
-from .utils import get_sentence
+from utils import get_sentence
 
 
 METRIC_SERVICE_NAME = os.getenv("METRIC_SERVICE_NAME")
@@ -43,7 +43,9 @@ cache = OrderedDict()
 
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000)
+    pika.ConnectionParameters(
+        host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000
+    )
 )
 channel = queue_connection.channel()
 logger.info("OCR channel initialized")
@@ -63,26 +65,36 @@ logger.info("OCR model loaded")
 def process_ocr_task(ch, method, properties, body):
     try:
         with tracer.start_as_current_span("ocr-service") as span:
-            with tracer.start_as_current_span("load_data", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "load_data", links=[trace.Link(span.get_span_context())]
+            ):
                 task = json.loads(body)
                 logger.info(f"Processing image: {task['task_id']}")
-                image = Image.open(BytesIO(base64.b64decode(task["data"].encode("utf-8"))))
+                image = Image.open(
+                    BytesIO(base64.b64decode(task["data"].encode("utf-8")))
+                )
                 image_hash = imagehash.average_hash(image)
 
             if image_hash in cache:
                 channel.basic_publish(
                     exchange="",
                     routing_key="ocr_results",
-                    body=json.dumps({"task_id": task["task_id"], "result": cache[image_hash]}),
+                    body=json.dumps(
+                        {"task_id": task["task_id"], "result": cache[image_hash]}
+                    ),
                 )
                 channel.basic_ack(delivery_tag=method.delivery_tag)
                 return
 
-            with tracer.start_as_current_span("ocr_detection", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "ocr_detection", links=[trace.Link(span.get_span_context())]
+            ):
                 detection = reader.readtext(image)
 
             # Get median height of bboxes
-            with tracer.start_as_current_span("ocr_detection_height", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "ocr_detection_height", links=[trace.Link(span.get_span_context())]
+            ):
                 bboxes_heights = []
                 for bbox, text, prob in detection:
                     (top_left, _, bottom_right, _) = bbox
@@ -90,7 +102,9 @@ def process_ocr_task(ch, method, properties, body):
                 bbox_height = int(np.median(bboxes_heights))
 
             # Create the final result
-            with tracer.start_as_current_span("ocr_merge_sentence", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "ocr_merge_sentence", links=[trace.Link(span.get_span_context())]
+            ):
                 result = get_sentence(detection)
 
             bboxes = [box[0] for box in result]

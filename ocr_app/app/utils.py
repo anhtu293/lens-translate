@@ -13,7 +13,9 @@ def get_sentence(raw_result, x_ths=1, y_ths=0.5, mode="ltr"):
         max_y = max(all_y)
         height = max_y - min_y
         # last element indicates group
-        box_group.append([box[1], min_x, max_x, min_y, max_y, height, 0.5 * (min_y + max_y), 0])
+        box_group.append(
+            [box[1], min_x, max_x, min_y, max_y, height, 0.5 * (min_y + max_y), 0]
+        )
 
     # arrage order in paragraph
     arranged_result = []
@@ -43,13 +45,17 @@ def get_sentence(raw_result, x_ths=1, y_ths=0.5, mode="ltr"):
     # cluster boxes into paragraph
     current_group = 1
     while len([box for box in arranged_result if box[7] == 0]) > 0:
-        box_group0 = [box for box in arranged_result if box[7] == 0]  # group0 = non-group
+        box_group0 = [
+            box for box in arranged_result if box[7] == 0
+        ]  # group0 = non-group
         # new group
         if len([box for box in arranged_result if box[7] == current_group]) == 0:
             box_group0[0][7] = current_group  # assign first box to form new group
         # try to add group
         else:
-            current_box_group = [box for box in arranged_result if box[7] == current_group]
+            current_box_group = [
+                box for box in arranged_result if box[7] == current_group
+            ]
             mean_height = np.mean([box[5] for box in current_box_group])
             min_gx = min([box[1] for box in current_box_group]) - x_ths * mean_height
             max_gx = max([box[2] for box in current_box_group]) + x_ths * mean_height
@@ -85,6 +91,16 @@ def get_sentence(raw_result, x_ths=1, y_ths=0.5, mode="ltr"):
         for box in current_box_group:
             text += " " + box[0]
 
-        result.append([[[min_gx, min_gy], [max_gx, min_gy], [max_gx, max_gy], [min_gx, max_gy]], text[1:]])
+        result.append(
+            [
+                [
+                    [min_gx, min_gy],
+                    [max_gx, min_gy],
+                    [max_gx, max_gy],
+                    [min_gx, max_gy],
+                ],
+                text[1:],
+            ]
+        )
 
     return result
