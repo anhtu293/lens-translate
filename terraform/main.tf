@@ -14,8 +14,8 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_container_cluster" "logging_cluster" {
-  name     = "logging-cluster"
+resource "google_container_cluster" "logging_tracing_cluster" {
+  name     = "logging-tracing-cluster"
   location = var.location
 
   # It's recommended to seperate the node pools from the cluster definition
@@ -45,8 +45,8 @@ resource "google_container_cluster" "logging_cluster" {
 }
 
 resource "google_container_node_pool" "logging_cluster_nodes" {
-  name       = "logging-cluster-nodes"
-  cluster    = google_container_cluster.logging_cluster.id
+  name       = "logging-tracing-cluster-nodes"
+  cluster    = google_container_cluster.logging_tracing_cluster.id
   node_count = 2
 
   node_config {
@@ -151,6 +151,5 @@ resource "google_compute_firewall" "allow_lens_app" {
   }
 
   direction     = "INGRESS"
-  source_ranges = ["0.0.0.0/0"]      // Allows traffic from all IPs
-  target_tags   = ["allow-lens-app"] // Optional: Use if you want to target specific VMs with this tag
+  source_ranges = ["0.0.0.0/0"] // Allows traffic from all IPs
 }

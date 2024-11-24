@@ -30,9 +30,9 @@ deploy_component() {
 # Function to get elasticsearch certificate
 copy_elasticsearch_certificate() {
     echo "Copying elasticsearch certificate..."
-    CA_CRT=$(kubectl get secrets --namespace=logging elasticsearch-master-certs -o json | jq -r '.data["ca.crt"]')
-    TLS_CRT=$(kubectl get secrets --namespace=logging elasticsearch-master-certs -o json | jq -r '.data["tls.crt"]')
-    TLS_KEY=$(kubectl get secrets --namespace=logging elasticsearch-master-certs -o json | jq -r '.data["tls.key"]')
+    CA_CRT=$(kubectl get secrets --namespace=logging-tracing elasticsearch-master-certs -o json | jq -r '.data["ca.crt"]')
+    TLS_CRT=$(kubectl get secrets --namespace=logging-tracing elasticsearch-master-certs -o json | jq -r '.data["tls.crt"]')
+    TLS_KEY=$(kubectl get secrets --namespace=logging-tracing elasticsearch-master-certs -o json | jq -r '.data["tls.key"]')
 
     # Replace the certificate in the model-serving elasticsearch-cert.yaml
     sed -i 's|ca.crt:.*|ca.crt: '"$CA_CRT"'|' model-serving/elasticsearch-cert.yaml
@@ -49,9 +49,9 @@ copy_elasticsearch_certificate() {
 
 
 # DEPLOY LOGGING CLUSTER
-deploy_logging_cluster() {
+deploy_logging_tracing_cluster() {
     echo "****************************************************"
-    echo "********** DEPLOY LOGGING CLUSTER... ***************"
+    echo "********** DEPLOY LOGGING AND TRACING CLUSTER... ***************"
     echo "****************************************************"
 
     export ELASTICSEARCH_IP=""
@@ -61,31 +61,31 @@ deploy_logging_cluster() {
     export JAEGER_QUERY_HOST=""
     export LOGGING_NODE_IP=""
 
-    gcloud container clusters get-credentials logging-cluster --zone $ZONE --project $PROJECT_ID
+    gcloud container clusters get-credentials logging-tracing-cluster --zone $ZONE --project $PROJECT_ID
 
-    if ! kubectl get namespace logging > /dev/null 2>&1; then
-        kubectl create namespace logging
+    if ! kubectl get namespace logging-tracing > /dev/null 2>&1; then
+        kubectl create namespace logging-tracing
     fi
-    kubens logging
-    kubectl apply -f logging/secret.yaml
-    deploy_component "elasticsearch" "./logging/elasticsearch" ""
+    kubens logging-tracing
+    kubectl apply -f logging-tracing/secret.yaml
+    deploy_component "elasticsearch" "./logging-tracing/elasticsearch" ""
 
     # Deploy cadvisor, node-exporter
-    deploy_component "cadvisor" "./logging/cadvisor" ""
+    deploy_component "cadvisor" "./logging-tracing/cadvisor" ""
     echo "Cadvisor is launched."
-    deploy_component "node-exporter" "./logging/node-exporter" ""
+    deploy_component "node-exporter" "./logging-tracing/node-exporter" ""
     echo "Node exporter is launched."
 
     # To deploy kibana and jaeger, we need to make sure that elasticsearch is ready
     echo "Waiting for elasticsearch to be ready..."
-    kubectl wait --for=condition=ready pod -l app=elasticsearch-master -n logging --timeout=300s
+    kubectl wait --for=condition=ready pod -l app=elasticsearch-master -n logging-tracing --timeout=300s
 
     # Deploy kibana and jaeger
     echo "Elasticsearch is ready. Deploying filebeat, kibana and jaeger..."
-    deploy_component "filebeat" "./logging/filebeat" ""
+    deploy_component "filebeat" "./logging-tracing/filebeat" ""
     echo "Filebeat is launched."
-    deploy_component "kibana" "./logging/kibana" ""
-    deploy_component "jaeger" "./logging/jaeger" ""
+    deploy_component "kibana" "./logging-tracing/kibana" ""
+    deploy_component "jaeger" "./logging-tracing/jaeger" ""
 
     # Get elasticsearch certificate and assign to model-serving filebeat and metric-server filebeat
     copy_elasticsearch_certificate
@@ -106,7 +106,7 @@ deploy_logging_cluster() {
         KIBANA_IP=$(kubectl get svc kibana-kibana --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
         [ -z "$KIBANA_IP" ] && sleep 2
     done
-    KIBANA_PASSWORD=$(kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d)
+    KIBANA_PASSWORD=$(kubectl get secrets --namespace=logging-tracing elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d)
     echo "Kibana Address: http://$KIBANA_IP:5601"
     echo "Kibana Username: elastic"
     echo "Kibana Password: $KIBANA_PASSWORD"
@@ -320,8 +320,8 @@ if ! command -v yq &> /dev/null; then
 fi
 
 
-if [ "$1" = "logging" ]; then
-    deploy_logging_cluster
+if [ "$1" = "logging_tracing" ]; then
+    deploy_logging_tracing_cluster
     create_summary
 elif [ "$1" = "model-serving" ]; then
     deploy_model_serving_cluster
@@ -330,7 +330,7 @@ elif [ "$1" = "metrics" ]; then
     deploy_metrics_cluster
     create_summary
 elif [ "$1" = "all" ]; then
-    deploy_logging_cluster
+    deploy_logging_tracing_cluster
     deploy_model_serving_cluster
     deploy_metrics_cluster
     create_summary
