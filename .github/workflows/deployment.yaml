@@ -32,15 +32,15 @@ jobs:
       - name: Build and Push OCR Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./ocr-app
-          file: ./ocr-app/Dockerfile
+          context: ./ocr_app
+          file: ./ocr_app/Dockerfile
           tags: anhtu293/ocr-app:${{ github.sha }}
           push: true
       - name: Build and Push Translation Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./trans-app
-          file: ./trans-app/Dockerfile
+          context: ./trans_app
+          file: ./trans_app/Dockerfile
           tags: anhtu293/translation-app:${{ github.sha }}
           push: true
 
