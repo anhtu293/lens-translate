@@ -23,7 +23,7 @@ services:
 
   ocr-app:
     build:
-      context: ./ocr-app
+      context: ./ocr_app
       dockerfile: Dockerfile
     depends_on:
       rabbitmq:
@@ -42,7 +42,7 @@ services:
 
   translation-app:
     build:
-      context: ./trans-app
+      context: ./trans_app
       dockerfile: Dockerfile
     depends_on:
       rabbitmq:

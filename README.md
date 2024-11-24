@@ -3,6 +3,15 @@
 This application can directly translate English text from images into Vietnamese.
 The purpose of this project is to develop and deploy a machine learning application at scale.
 
+## Table of Contents
+[1. System architecture with Kubernetes](#1-system-architecture-with-kubernetes-k8s)
+
+[2. Local deployment using docker compose](#2-local-deployment-with-docker-compose)
+
+[3. Deployment on Google Cloud Platform](#3-deployment-on-google-cloud-platform)
+
+[4. Setup CI/CD](#4-setup-cicd)
+
 ## 1. System architecture with Kubernetes (K8s)
 ![](images/archi.png)
 
@@ -11,9 +20,9 @@ The purpose of this project is to develop and deploy a machine learning applicat
 -  **deployments**: Deploy clusters with K8s and `helm`
 - **lens**: `lens-translation` application
 - **monitoring**: configs for monitoring system, only use for local deployment with `docker compose`
-- **ocr-app**: OCR model serving
+- **ocr_app**: OCR model serving
 - **terraform**: Create clusters on GCP
-- **trans-app**: Translation model serving
+- **trans_app**: Translation model serving
 - **unitests**: Unit test for CI/CD
 - **images**: images for documentation
 

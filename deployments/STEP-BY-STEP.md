@@ -63,6 +63,7 @@ k get svc kibana-kibana --output jsonpath='{.status.loadBalancer.ingress[0].ip}'
 kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
 ```
 
+- In case you need to reinstall `kibana`, these are commands to remove kibana.
 ```bash
 kubectl get all --namespace=logging --no-headers | grep kibana | awk '{print $1}' | xargs -I {} kubectl delete {} --namespace=logging
 k delete serviceaccounts pre-install-kibana-kibana && k delete configmaps kibana-kibana-helm-scripts && k delete roles.rbac.authorization.k8s.io pre-install-kibana-kibana && k delete rolebindings.rbac.authorization.k8s.io pre-install-kibana-kibana

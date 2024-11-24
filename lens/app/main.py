@@ -16,7 +16,7 @@ import cv2
 import asyncio
 from PIL import Image, ImageFont
 from io import BytesIO
-from .utils import draw_results
+from utils import draw_results
 import pika
 import json
 import uuid
@@ -39,8 +39,7 @@ set_meter_provider(provider)
 meter = metrics.get_meter(METRIC_SERVICE_NAME, METRIC_SERVICE_VERSION)
 # Create your first counter
 counter = meter.create_counter(
-    name="lens_request_counter",
-    description="Number of lens requests"
+    name="lens_request_counter", description="Number of lens requests"
 )
 histogram = meter.create_histogram(
     name="lens_response_histogram",
@@ -66,7 +65,9 @@ RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD")
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST")
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 queue_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000)
+    pika.ConnectionParameters(
+        host=RABBITMQ_HOST, credentials=credentials, heartbeat=6000
+    )
 )
 logger.info("Connected to RabbitMQ")
 channel = queue_connection.channel()
@@ -110,16 +111,22 @@ async def process_image(data: bytes, task_id: str) -> None:
     with tracer.start_as_current_span("process_image") as span:
         # Wait for OCR result
         logger.info("Sending OCR task")
-        with tracer.start_as_current_span("send_ocr_task", links=[trace.Link(span.get_span_context())]):
+        with tracer.start_as_current_span(
+            "send_ocr_task", links=[trace.Link(span.get_span_context())]
+        ):
             channel.basic_publish(
                 exchange="",
                 routing_key="ocr_tasks",
-                body=json.dumps({"task_id": task_id, "data": base64.b64encode(data).decode("utf-8")}),
+                body=json.dumps(
+                    {"task_id": task_id, "data": base64.b64encode(data).decode("utf-8")}
+                ),
             )
 
         # Wait for OCR result
         logger.info("Waiting for OCR result")
-        with tracer.start_as_current_span("wait_ocr_result", links=[trace.Link(span.get_span_context())]):
+        with tracer.start_as_current_span(
+            "wait_ocr_result", links=[trace.Link(span.get_span_context())]
+        ):
             wait_count = 0
             ocr_ok = True
             while True:
@@ -141,7 +148,9 @@ async def process_image(data: bytes, task_id: str) -> None:
         # Translation
         if ocr_ok:
             logger.info("Sending translation task")
-            with tracer.start_as_current_span("send_translation_task", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "send_translation_task", links=[trace.Link(span.get_span_context())]
+            ):
                 channel.basic_publish(
                     exchange="",
                     routing_key="translation_tasks",
@@ -150,7 +159,9 @@ async def process_image(data: bytes, task_id: str) -> None:
 
             # Wait for translation result
             logger.info("Waiting for translation result")
-            with tracer.start_as_current_span("wait_translation_result", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "wait_translation_result", links=[trace.Link(span.get_span_context())]
+            ):
                 wait_count = 0
                 translation_ok = True
                 while True:
@@ -172,13 +183,17 @@ async def process_image(data: bytes, task_id: str) -> None:
         # find suitable font size
         if ocr_ok and translation_ok:
             logger.info("Formatting results")
-            with tracer.start_as_current_span("format_results", links=[trace.Link(span.get_span_context())]):
+            with tracer.start_as_current_span(
+                "format_results", links=[trace.Link(span.get_span_context())]
+            ):
                 font_size = int(ocr_result["bbox_height"] / 1.5)
                 # Lens
-                fontpath = os.path.join(os.path.dirname(__file__), "./BeVietnam-Light.ttf")
+                fontpath = os.path.join(
+                    os.path.dirname(__file__), "./BeVietnam-Light.ttf"
+                )
                 font = ImageFont.truetype(fontpath, font_size)
                 image = Image.open(BytesIO(data))
-                lens_result = await draw_results(
+                lens_result = draw_results(
                     image, ocr_result["bboxes"], translation_result, font
                 )
 
@@ -209,12 +224,16 @@ async def translate(file: UploadFile = File(...)):
                 logger.info(f"Sending result: {task_id}")
                 result = task_results[task_id]
                 if result is not None:
-                    histogram.record(time() - task_start_time[task_id], {"api": "/lens"})
+                    histogram.record(
+                        time() - task_start_time[task_id], {"api": "/lens"}
+                    )
                     counter.add(1, {"api": "/lens"})
                     task_start_time.pop(task_id)
                     return StreamingResponse(BytesIO(result), media_type="image/jpeg")
                 else:
-                    histogram.record(time() - task_start_time[task_id], {"api": "/lens"})
+                    histogram.record(
+                        time() - task_start_time[task_id], {"api": "/lens"}
+                    )
                     counter.add(1, {"api": "/lens"})
                     task_start_time.pop(task_id)
                     return {"error": "Error"}
