@@ -13,7 +13,7 @@ The purpose of this project is to develop and deploy a machine learning applicat
 [4. Setup CI/CD](#4-setup-cicd)
 
 ## 1. System architecture with Kubernetes (K8s)
-![](images/archi.png?)
+![](images/archi.png)
 
 
 ### Note
