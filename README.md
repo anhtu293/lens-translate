@@ -13,7 +13,7 @@ The purpose of this project is to develop and deploy a machine learning applicat
 [4. Setup CI/CD](#4-setup-cicd)
 
 ## 1. System architecture with Kubernetes (K8s)
-![](images/archi.png?)
+![](images/archi.png)
 
 
 ### Note
@@ -86,7 +86,7 @@ You can access different tool at:
 
 We deploy our system on Google Cloud Platform (GCP) using three distinct clusters:
 
-1. **Logging Cluster**: Hosts the ELK stack and Jaeger for comprehensive logging and tracing.
+1. **Logging & Tracing Cluster**: Hosts the ELK stack and Jaeger for comprehensive logging and tracing.
 2. **Metrics Cluster**: Contains the Prometheus server and Grafana for effective monitoring.
 3. **Model Serving Cluster**: Dedicated to model serving operations.
 
@@ -149,16 +149,16 @@ You can do `source ./deployments/variables.sh` to set these env variables in you
 When the process finishes, you put the IP (`$APP_IP`) in your `/etc/hosts`: `THE_IP_OF_APP app.example.com`
 
 **Kibana**
-- `echo $KIBANA_IP` to get kibana address.
+- `echo http://$KIBANA_IP:5601` to get kibana address.
 - Connect with username `elastic` and password $KIBANA_PASSWORD.
 ![](images/kibana_log.png)
 
 **Jaeger**
-- `echo $JAEGER_QUERY_HOST` to get JaegerUI address.
+- `echo http://$JAEGER_QUERY_HOST` to get JaegerUI address.
 ![](images/jaegerui.png)
 
 **Grafana**
-- `echo $GRAFANA_IP` and you can access to grafana with that address.
+- `echo http://$GRAFANA_IP` and you can access to grafana with that address.
 - Username is `admin` and Password
 ```bash
 echo $GRAFANA_PASSWORD
